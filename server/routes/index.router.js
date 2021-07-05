@@ -3,7 +3,8 @@ const router = express.Router();
 
 const ctrlTask = require('../controllers/task.controller');
 
-router.post('/getTasks', ctrlTask.getTasks);
+router.get('/getTasks', ctrlTask.getTasks);
+router.put('/completed', ctrlTask.completed);
 
 module.exports = router;
 

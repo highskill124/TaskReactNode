@@ -1,56 +1,97 @@
 import React, {useEffect, useState} from 'react'
-import {Link} from 'react-router-dom'
 import {
   CCol,
   CContainer,
   CRow,
   CCard,
-  CCardBody
+  CCardBody,
+  CModal,
+  CModalBody,
+  CModalFooter,
+  CButton
 } from '@coreui/react'
 import axios from "axios";
+import './tasks.scss';
 
 const Tasks = () => {
 
-  const [number, setNumber] = useState(3);
+  // const [number, setNumber] = useState(3);
+  const [modal, setModal] = useState(false)
+  const [tasks, setTasks] = useState(null);
+  const [title, setTitle] = useState('');
+  const [uuid, setUuid] = useState('');
+  const [taskId, setTaskId] = useState('');
+
+  const [tassdfkId, setTasdfkId] = useState({id: ''});
 
   useEffect(() => {
-    axios.post(`http://localhost:4000/api/getTasks`, {'number': number})
+    axios.get(`http://localhost:4000/api/getTasks`, {
+      params: {
+        number: 9
+      }
+    })
       .then(res => {
-
-        // setNumber(number);
+        setTasks(res.data);
       })
   }, [])
 
+  function TaskDetail(title, index, task_id) {
+    setTitle(title);
+    setUuid(index);
+    setTaskId(task_id);
+    setModal(!modal);
+  }
+
+  const completed = async () => {
+
+    let newArr = [...tasks];
+    tasks.map((data,index) => {
+      if(newArr[index]._id === taskId){
+        newArr[index].mark= 1;
+      }
+    });
+    setTasks(newArr);
+
+    axios.put(`http://localhost:4000/api/completed`, {'taskID': taskId})
+      .then(res => {
+        setModal(!modal);
+      })
+  }
 
   return (
     <div className="c-app c-default-layout flex-row align-items-center">
       <CContainer>
         <CRow>
-          <CCol xs={4}>
-            <CCard>
-              <CCardBody>
-                <p>Express-Delivery</p>
-                <p>90 min express delivery</p>
-              </CCardBody>
-            </CCard>
-          </CCol>
-          <CCol xs={4}>
-            <CCard>
-              <CCardBody>
-                <p>Express-Delivery</p>
-                <p>90 min express delivery</p>
-              </CCardBody>
-            </CCard>
-          </CCol>
-          <CCol xs={4}>
-            <CCard>
-              <CCardBody>
-                <p>Express-Delivery</p>
-                <p>90 min express delivery</p>
-              </CCardBody>
-            </CCard>
-          </CCol>
+          {tasks && tasks.map((task, index) =>
+            <CCol xs="12" sm="6" md="4" key={index}>
+              <CCard className="task-card" onClick={() => TaskDetail(task.title, index + 1, task._id)}>
+                <CCardBody>
+                  <p className={task.mark ? "uuidStyle" : ""}><b>Task #{index + 1}</b></p>
+                  <p>{task.title}</p>
+                </CCardBody>
+              </CCard>
+            </CCol>
+          )}
         </CRow>
+
+        <CModal
+          show={modal}
+          onClose={setModal}
+          className='modal'
+        >
+          <CModalBody>
+            <h4>Task {uuid} - a {title}</h4>
+          </CModalBody>
+          <CModalFooter>
+            <CButton color="primary" size='sm' onClick={() => completed()}>Complete</CButton>{' '}
+            <CButton
+              color="secondary"
+              size='sm'
+              onClick={() => setModal(false)}
+            >Close</CButton>
+          </CModalFooter>
+        </CModal>
+
       </CContainer>
     </div>
   )
