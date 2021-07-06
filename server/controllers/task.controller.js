@@ -7,24 +7,6 @@ const axios = require('axios');
 
 mongoose.set('useFindAndModify', false);
 
-module.exports.store = (req, res, next) => {
-  var task = new Task();
-  // console.log(req.body);
-  task.name = req.body.name;
-  task.email = req.body.email;
-  task.password = req.body.password;
-  task.save((err, doc) => {
-    if (!err)
-      res.send(doc);
-    else {
-      if (err.code === 11000)
-        res.json({err: 'Duplicate email adrress found.'});
-      else
-        return next(err);
-    }
-  });
-}
-
 module.exports.getTasks = async (req, res) => {
   const titles = await axios.get('https://lorem-faker.vercel.app/api?quantity=' + req.query.number)
   for(let i = 0; i < titles.data.length; i++){

@@ -12,7 +12,6 @@ const loading = (
 const Tasks = React.lazy(() => import('./views/pages/tasks/Tasks'));
 
 class App extends Component {
-
   render() {
     return (
       <HashRouter>

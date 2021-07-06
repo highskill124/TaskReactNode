@@ -22,8 +22,6 @@ const Tasks = () => {
   const [uuid, setUuid] = useState('');
   const [taskId, setTaskId] = useState('');
 
-  const [tassdfkId, setTasdfkId] = useState({id: ''});
-
   useEffect(() => {
     axios.get(`http://localhost:4000/api/getTasks`, {
       params: {
@@ -43,17 +41,15 @@ const Tasks = () => {
   }
 
   const completed = async () => {
-
-    let newArr = [...tasks];
-    tasks.map((data,index) => {
-      if(newArr[index]._id === taskId){
-        newArr[index].mark= 1;
-      }
-    });
-    setTasks(newArr);
-
     axios.put(`http://localhost:4000/api/completed`, {'taskID': taskId})
       .then(res => {
+        let newArr = [...tasks];
+        for (let i = 0; i < tasks.length; i++){
+          if(newArr[i]._id === taskId){
+            newArr[i].mark= 1;
+          }
+        }
+        setTasks(newArr);
         setModal(!modal);
       })
   }
